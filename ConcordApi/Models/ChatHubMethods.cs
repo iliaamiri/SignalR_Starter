@@ -1,6 +1,8 @@
 ﻿namespace ConcordApi.Models;
 
-public class HubMethods
+public static class HubMethods
 {
-    
+    public static string ReceiveMessage { get; } = "ReceiveMessage";
+    public static string UpdateMessage { get; } = "UpdateMessage";
+    public static string DeleteMessage { get; } = "DeleteMessage";
 }
