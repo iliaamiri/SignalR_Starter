@@ -1,24 +1,33 @@
-﻿namespace ConcordApi.Services.Channel;
+﻿using ConcordApi.Data;
+using Microsoft.EntityFrameworkCore;
+
+namespace ConcordApi.Services.Channel;
 
 public class ChannelService : IChannelService
 {
-    public async Task<ICollection<Models.Channel>> GetChannelsAsync()
-    {
-        throw new NotImplementedException();
-    }
+    private readonly ConcordDbContext _dbContext;
     
-    public async Task<ICollection<Models.Channel>> GetChannelsWithMessagesAsync()
+    public ChannelService(ConcordDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public async Task<Models.Channel> GetChannelAsync(int channelId)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<ICollection<Models.Channel>> GetChannelsAsync() => await _dbContext.Channels.ToListAsync();
+
+    public async Task<ICollection<Models.Channel>> GetChannelsWithMessagesAsync() =>
+        await _dbContext.Channels.Include(c => c.Messages).ToListAsync();
+
+    public async Task<Models.Channel?> GetChannelAsync(int channelId) => await _dbContext.Channels.FindAsync(channelId);
 
     public async Task<Models.Channel> CreateChannelAsync(string name)
     {
-        throw new NotImplementedException();
+        var channel = await _dbContext.Channels.AddAsync(new Models.Channel()
+        {
+            Name = name
+        });
+
+        await _dbContext.SaveChangesAsync();
+        
+        return channel.Entity;
     }
 }

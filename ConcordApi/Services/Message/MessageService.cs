@@ -1,31 +1,55 @@
-﻿using ConcordApi.Dtos;
+﻿using ConcordApi.Data;
+using ConcordApi.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace ConcordApi.Services.Message;
 
 public class MessageService : IMessageService
 {
-    public async Task<ICollection<Models.Message>> GetMessagesAsync()
+    private readonly ConcordDbContext _dbContext;
+    public MessageService(ConcordDbContext dbContext)
     {
-        throw new NotImplementedException();
+        _dbContext = dbContext;
     }
 
-    public async Task<Models.Message> GetMessageAsync(int messageId)
-    {
-        throw new NotImplementedException();
-    }
+    public async Task<ICollection<Models.Message>> GetMessagesAsync() => await _dbContext.Messages.ToListAsync();
+
+    public async Task<Models.Message?> GetMessageAsync(int messageId) => await _dbContext.Messages.FindAsync(messageId);
 
     public async Task<Models.Message> CreateMessageAsync(CreateMessageDto createMessageDto)
     {
-        throw new NotImplementedException();
+        var message = await _dbContext.Messages.AddAsync(new Models.Message()
+        {
+            Text = createMessageDto.Text,
+            Sender = createMessageDto.Sender,
+            ChannelId = createMessageDto.ChannelId
+        });
+        
+        await _dbContext.SaveChangesAsync();
+        
+        return message.Entity;
     }
 
     public async Task<Models.Message> UpdateMessageAsync(UpdateMessageDto updateMessageDto)
     {
-        throw new NotImplementedException();
+        var message = await GetMessageAsync(updateMessageDto.Id);
+        if (message == null) throw new Exception("Message not found");
+        
+        message.Text = updateMessageDto.Text;
+        message.UpdatedAt = DateTime.UtcNow;
+        
+        await _dbContext.SaveChangesAsync();
+        
+        return message;
     }
 
-    public async Task<Models.Message> DeleteMessageAsync(int messageId)
+    public async Task DeleteMessageAsync(int messageId)
     {
-        throw new NotImplementedException();
+        var message = await GetMessageAsync(messageId);
+        if (message == null) throw new Exception("Message not found");
+        
+        _dbContext.Messages.Remove(message);
+        
+        await _dbContext.SaveChangesAsync();
     }
 }

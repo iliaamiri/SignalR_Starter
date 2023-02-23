@@ -7,7 +7,8 @@ public class Message
     public string Sender { get; set; } = null!;
     
     public DateTime CreatedAt { get; set; }
-    
+    public DateTime UpdatedAt { get; set; }
+
     public int ChannelId { get; set; }
     public Channel Channel { get; set; }
 }

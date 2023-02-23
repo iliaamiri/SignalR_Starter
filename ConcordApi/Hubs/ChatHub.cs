@@ -23,6 +23,11 @@ public class ChatHub : Hub
     public async Task<ICollection<Channel>> GetChannels() =>
         await _channelService.GetChannelsWithMessagesAsync();
     
+    public async Task<Channel> CreateChannel(string name)
+    {
+        return await _channelService.CreateChannelAsync(name);
+    }
+    
     public async Task SendMessage(CreateMessageDto createMessageDto)
     {
         var message = await _messageService.CreateMessageAsync(createMessageDto);
@@ -51,9 +56,9 @@ public class ChatHub : Hub
         }
     }
 
-    public async Task DeleteMessage(int messageId)
+    public async Task DeleteMessage(Message message)
     {
-        var message = await _messageService.DeleteMessageAsync(messageId);
+        await _messageService.DeleteMessageAsync(message.Id);
         await Clients.Group(message.ChannelId.ToString()).SendAsync(HubMethods.DeleteMessage, message);
     }
 

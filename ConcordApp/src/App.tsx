@@ -1,15 +1,21 @@
+import {Home} from "@/pages/home";
+import {ChatHubConnectionContext} from "@/lib/contexts";
+import {useSignalR} from "@/lib/hooks/useSignalR";
+import {CannotConnect} from "@/pages/cannotConnect";
+import {Loading} from "@/pages/loading";
+
 function App() {
+    const { connection: chatHubConnection, isConnectionFailed } = useSignalR("/r/chatHub");
 
-  return (
-    <div className="container flex mx-auto rounded-lg bg-slate-300">
-      <div className="">
+    if (chatHubConnection === undefined) {
+        return isConnectionFailed ? <CannotConnect /> : <Loading />;
+    }
 
-      </div>
-      <div className=''>
-
-      </div>
-    </div>
-  )
+    return (
+        <ChatHubConnectionContext.Provider value={chatHubConnection}>
+            <Home/>
+        </ChatHubConnectionContext.Provider>
+    );
 }
 
 export default App

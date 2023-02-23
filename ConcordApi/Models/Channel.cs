@@ -6,7 +6,6 @@ public class Channel
     public string Name { get; set; }
     
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
 
     public ICollection<Message> Messages { get; set; } = new List<Message>();
 }
