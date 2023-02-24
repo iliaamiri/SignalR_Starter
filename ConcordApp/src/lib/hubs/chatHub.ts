@@ -9,6 +9,12 @@ export namespace ChatHub {
         LeaveChannel: "LeaveChannel"
     };
 
+    export const ClientMethods = {
+        ReceiveMessage: "ReceiveMessage",
+        UpdateMessage: "UpdateMessage",
+        DeleteMessage: "DeleteMessage",
+    };
+
     export interface HubResponse<T> {
         success: boolean;
         data?: T;

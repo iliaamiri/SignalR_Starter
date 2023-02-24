@@ -21,7 +21,7 @@ export function ChannelList({ channels, onNewChannel, onSelectChannel }: Props) 
         <>
             <ul className="menu bg-base-100 mt-10 w-full p-2 rounded-box">
                 {Object.values(channels).map((channel) => (
-                    <li onClick={() => onSelectChannel(channel.id)}><a>{channel.name}</a></li>
+                    <li key={`channel-${channel.id}`} onClick={() => onSelectChannel(channel.id)}><a>{channel.name}</a></li>
                 ))}
                 <li><input className={"w-full"} type="text" onChange={(e) => setChannelName(e.target.value)} placeholder={"Channel Name ... "}/></li>
             </ul>
