@@ -28,10 +28,11 @@ public class ChatHub : Hub
         return await _channelService.CreateChannelAsync(name);
     }
     
-    public async Task SendMessage(CreateMessageDto createMessageDto)
+    public async Task<Message> SendMessage(CreateMessageDto createMessageDto)
     {
         var message = await _messageService.CreateMessageAsync(createMessageDto);
         await Clients.Group(message.ChannelId.ToString()).SendAsync(HubMethods.ReceiveMessage, message);
+        return message;
     }
 
     public async Task<HubResponse<Message>> UpdateMessage(UpdateMessageDto updateMessageDto)
@@ -66,9 +67,9 @@ public class ChatHub : Hub
     
     public async Task LeaveChannel(int channelId) => await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId.ToString());
     
-    public override Task OnConnectedAsync()
+    public override async Task OnConnectedAsync()
     {
-        return base.OnConnectedAsync();
+        await base.OnConnectedAsync();
     }
     
     public override Task OnDisconnectedAsync(Exception? exception)

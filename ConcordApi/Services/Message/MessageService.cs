@@ -1,5 +1,6 @@
 ﻿using ConcordApi.Data;
 using ConcordApi.Dtos;
+using ConcordApi.Services.Channel;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConcordApi.Services.Message;
@@ -7,9 +8,11 @@ namespace ConcordApi.Services.Message;
 public class MessageService : IMessageService
 {
     private readonly ConcordDbContext _dbContext;
-    public MessageService(ConcordDbContext dbContext)
+    private readonly IChannelService _channelService;
+    public MessageService(ConcordDbContext dbContext, IChannelService channelService)
     {
         _dbContext = dbContext;
+        _channelService = channelService;
     }
 
     public async Task<ICollection<Models.Message>> GetMessagesAsync() => await _dbContext.Messages.ToListAsync();
@@ -26,6 +29,8 @@ public class MessageService : IMessageService
         });
         
         await _dbContext.SaveChangesAsync();
+
+        await _channelService.AddMessageToChannelsPoolAsync(message.Entity);
         
         return message.Entity;
     }
@@ -40,6 +45,8 @@ public class MessageService : IMessageService
         
         await _dbContext.SaveChangesAsync();
         
+        await _channelService.UpdateMessageToChannelsPoolAsync(message);
+        
         return message;
     }
 
@@ -49,6 +56,8 @@ public class MessageService : IMessageService
         if (message == null) throw new Exception("Message not found");
         
         _dbContext.Messages.Remove(message);
+
+        await _channelService.RemoveMessageFromChannelsPoolAsync(messageId);
         
         await _dbContext.SaveChangesAsync();
     }

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using ConcordApi.Data;
 using ConcordApi.Hubs;
 using ConcordApi.Services.Channel;
@@ -13,11 +14,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSignalR();
-
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddScoped<IChannelService, ChannelService>();
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ConcordDbContext>(
     opt =>
@@ -31,7 +27,15 @@ builder.Services.AddDbContext<ConcordDbContext>(
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
         }
-    });
+    }, optionsLifetime: ServiceLifetime.Singleton);
+
+builder.Services.AddSingleton<IChannelService, ChannelService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
+builder.Services.AddSignalR().AddJsonProtocol(o =>
+{
+    o.PayloadSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8085";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
