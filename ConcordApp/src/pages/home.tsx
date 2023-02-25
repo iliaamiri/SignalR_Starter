@@ -22,6 +22,26 @@ export function Home() {
     const chatHubConnection = useContext(ChatHubConnectionContext);
 
     useEffect(() => {
+        chatHubConnection.on(ChatHub.ClientMethods.NewChannel, (channel: Channel) => {
+            console.log("new channel", channel);
+            handleSelectChannel(channel.id);
+
+            chatHubConnection.invoke(ChatHub.ServerMethods.JoinChannel, channel.id);
+
+            setChannels((prevChannels) => ({...prevChannels, [channel.id]: channel}));
+        });
+
+        chatHubConnection.on(ChatHub.ClientMethods.DeleteChannel, (channelId: number) => {
+            console.log("delete channel", channelId);
+
+            handleSelectChannel(-1);
+
+            setChannels((prevChannels) => {
+                delete prevChannels[channelId];
+                return {...prevChannels};
+            });
+        });
+
         chatHubConnection.on(ChatHub.ClientMethods.ReceiveMessage, (message: Message) => {
             console.log("receive message", message);
 
@@ -65,6 +85,8 @@ export function Home() {
         });
 
         return () => {
+            chatHubConnection.off(ChatHub.ClientMethods.NewChannel);
+            chatHubConnection.off(ChatHub.ClientMethods.DeleteChannel);
             chatHubConnection.off(ChatHub.ClientMethods.ReceiveMessage);
             chatHubConnection.off(ChatHub.ClientMethods.UpdateMessage);
             chatHubConnection.off(ChatHub.ClientMethods.DeleteMessage);
@@ -84,10 +106,11 @@ export function Home() {
         return () => {
             document.removeEventListener('keydown', keyDownHandler);
         };
-    }, [selectedChannelId, messageText, senderName]);
+    }, [selectedChannelId, messageText, senderName, channels]);
 
     async function handleSendMessage() {
         try {
+            if (messageText === "") return;
             console.log("send message", messageText, selectedChannelId, senderName);
             const message = await chatHubConnection.invoke<Message>(ChatHub.ServerMethods.SendMessage, new CreateMessageDto({
                 channelId: selectedChannelId,
@@ -120,8 +143,6 @@ export function Home() {
 
             console.log(channel);
 
-            channels[channel.id] = channel;
-
             return true;
         } catch (err) {
             console.error(err);
@@ -137,11 +158,21 @@ export function Home() {
         }
     }
 
-    const handleSelectChannel = (channelId: number) => {
+    function handleSelectChannel (channelId: number) {
         console.log("select channel", channelId);
 
         setSelectedChannelId(channelId);
-    };
+    }
+
+    async function handleDeleteChannel(channelId: number) {
+        console.log("delete channel", channelId);
+
+        try {
+            await chatHubConnection.invoke(ChatHub.ServerMethods.DeleteChannel, channelId);
+        } catch (err){
+            console.error(err);
+        }
+    }
 
     return (
         <div className="container h-screen p-5 mx-auto">
@@ -162,15 +193,15 @@ export function Home() {
                             </label>
                         </div>
 
-                        <ChannelList channels={channels} onNewChannel={handleNewChannel}
-                                     onSelectChannel={handleSelectChannel}/>
+                        <ChannelList channels={channels} selectedChannelId={selectedChannelId} onNewChannel={handleNewChannel}
+                                     onSelectChannel={handleSelectChannel} onDeleteChannel={handleDeleteChannel}/>
                     </div>
                 </div>
                 <div className='flex w-9/12 p-2'>
                     <div className={"flex flex-col rounded bg-slate-600 w-full p-3"}>
                         <div className="navbar rounded-lg bg-primary text-primary-content">
                             <div className="flex-1">
-                                <a className="btn btn-ghost normal-case text-xl">daisyUI</a>
+                                <a className="btn btn-ghost normal-case text-xl">{channels[selectedChannelId]?.name ?? ""}</a>
                             </div>
                             <div className="flex-none">
                                 <button className="btn btn-square btn-ghost">
@@ -189,8 +220,8 @@ export function Home() {
                             <ChatRoomContent channels={channels} selectedChannelId={selectedChannelId} senderName={senderName} />
                         </HandlersContext.Provider>
                         <div className={"flex flex-row w-full"}>
-                            <input type="text" placeholder="Type here" value={messageText} onChange={(e) => setMessageText(e.target.value)} className="input input-bordered w-full max-w"/>
-                            <button className="relative right-10 top-2 btn btn-circle btn-sm"
+                            <input type="text" disabled={selectedChannelId < 0} placeholder="Type here" value={messageText} onChange={(e) => setMessageText(e.target.value)} className="input input-bordered w-full max-w"/>
+                            <button disabled={selectedChannelId < 0} className="relative right-10 top-2 btn btn-circle btn-sm"
                                     onClick={handleSendMessage}>
                                 <img src={SendIcon} className={"w-3/6"} alt=""/>
                             </button>

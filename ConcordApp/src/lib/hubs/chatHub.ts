@@ -6,13 +6,16 @@ export namespace ChatHub {
         UpdateMessage: "UpdateMessage",
         DeleteMessage: "DeleteMessage",
         JoinChannel: "JoinChannel",
-        LeaveChannel: "LeaveChannel"
+        LeaveChannel: "LeaveChannel",
+        DeleteChannel: "DeleteChannel",
     };
 
     export const ClientMethods = {
         ReceiveMessage: "ReceiveMessage",
         UpdateMessage: "UpdateMessage",
         DeleteMessage: "DeleteMessage",
+        NewChannel: "NewChannel",
+        DeleteChannel: "DeleteChannel",
     };
 
     export interface HubResponse<T> {

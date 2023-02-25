@@ -25,7 +25,20 @@ public class ChatHub : Hub
     
     public async Task<Channel> CreateChannel(string name)
     {
-        return await _channelService.CreateChannelAsync(name);
+        var channel = await _channelService.CreateChannelAsync(name);
+        
+        await Clients.All.SendAsync(HubMethods.NewChannel, channel);
+
+        return channel;
+    }
+    
+    public async Task DeleteChannel(int channelId)
+    {
+        await _channelService.DeleteChannelAsync(channelId);
+        
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, channelId.ToString());
+        
+        await Clients.All.SendAsync(HubMethods.DeleteChannel, channelId);
     }
     
     public async Task<Message> SendMessage(CreateMessageDto createMessageDto)

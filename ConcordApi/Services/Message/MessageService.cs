@@ -30,8 +30,6 @@ public class MessageService : IMessageService
         
         await _dbContext.SaveChangesAsync();
 
-        await _channelService.AddMessageToChannelsPoolAsync(message.Entity);
-        
         return message.Entity;
     }
 
@@ -45,8 +43,6 @@ public class MessageService : IMessageService
         
         await _dbContext.SaveChangesAsync();
         
-        await _channelService.UpdateMessageToChannelsPoolAsync(message);
-        
         return message;
     }
 
@@ -57,8 +53,6 @@ public class MessageService : IMessageService
         
         _dbContext.Messages.Remove(message);
 
-        await _channelService.RemoveMessageFromChannelsPoolAsync(messageId);
-        
         await _dbContext.SaveChangesAsync();
     }
 }
