@@ -14,11 +14,12 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+var serverVersion = new MySqlServerVersion(new Version(10, 4, 22));
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ConcordDbContext>(
     opt =>
     {
-        opt.UseNpgsql(connectionString);
+        opt.UseMySql(connectionString, serverVersion);
         if (builder.Environment.IsDevelopment())
         {
             // The following three options help with debugging, but should
@@ -49,7 +50,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection();
+// Static files (for React App)
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapFallbackToFile("index.html");
 
 app.UseAuthorization();
 

@@ -1,0 +1,7 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "./ConcordApi/Dockerfile"
+
+[deploy]
+startCommand = "dotnet ConcordApi.dll"
+restartPolicyType = "never"

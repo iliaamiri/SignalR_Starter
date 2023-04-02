@@ -12,9 +12,9 @@ public class ConcordDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Message>().Property("CreatedAt")
-            .HasDefaultValueSql("now()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
         modelBuilder.Entity<Channel>().Property("CreatedAt")
-            .HasDefaultValueSql("now()");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 
     public DbSet<Message> Messages => Set<Message>();
