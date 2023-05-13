@@ -176,8 +176,8 @@ export function Home() {
 
     return (
         <div className="container h-screen p-5 mx-auto">
-            <div className={"h-full flex rounded-lg bg-slate-300"}>
-                <div className="flex w-3/12 p-2">
+            <div className={"h-full flex flex-col md:flex-row rounded-lg bg-slate-300"}>
+                <div className="flex w-full md:w-3/12 p-2">
                     <div className={"rounded bg-slate-600 w-full p-3"}>
                         <h1 className={"text-3xl font-bold"}>Chat App</h1>
 
@@ -197,8 +197,8 @@ export function Home() {
                                      onSelectChannel={handleSelectChannel} onDeleteChannel={handleDeleteChannel}/>
                     </div>
                 </div>
-                <div className='flex w-9/12 p-2'>
-                    <div className={"flex flex-col rounded bg-slate-600 w-full p-3"}>
+                <div className='flex w-full md:w-9/12 h-full p-2'>
+                    <div className={"flex flex-col rounded bg-slate-600 w-full p-3 h-[50%] md:h-auto"}>
                         <div className="navbar rounded-lg bg-primary text-primary-content">
                             <div className="flex-1">
                                 <a className="btn btn-ghost normal-case text-xl">{channels[selectedChannelId]?.name ?? ""}</a>
@@ -214,11 +214,13 @@ export function Home() {
                             </div>
                         </div>
 
-                        <div className={`chat chat-end chat-start chat-header`}>
+                        <div className={`overflow-y-scroll`}>
+                            <div className={`chat chat-end chat-start chat-header`}>
+                            </div>
+                            <HandlersContext.Provider value={{ editMessageHandler: handleEditMessage, handleDeleteMessage}}>
+                                <ChatRoomContent channels={channels} selectedChannelId={selectedChannelId} senderName={senderName} />
+                            </HandlersContext.Provider>
                         </div>
-                        <HandlersContext.Provider value={{ editMessageHandler: handleEditMessage, handleDeleteMessage}}>
-                            <ChatRoomContent channels={channels} selectedChannelId={selectedChannelId} senderName={senderName} />
-                        </HandlersContext.Provider>
                         <div className={"flex flex-row w-full"}>
                             <input type="text" disabled={selectedChannelId < 0} placeholder="Type here" value={messageText} onChange={(e) => setMessageText(e.target.value)} className="input input-bordered w-full max-w"/>
                             <button disabled={selectedChannelId < 0} className="relative right-10 top-2 btn btn-circle btn-sm"

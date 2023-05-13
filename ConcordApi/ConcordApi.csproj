@@ -25,4 +25,12 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\assets\index-85deed09.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\index-cd56a7d1.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\assets\send-0ca3091b.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\index.html" />
+      <_ContentIncludedByDefault Remove="wwwroot\vite.svg" />
+    </ItemGroup>
+
 </Project>

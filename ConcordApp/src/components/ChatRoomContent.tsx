@@ -53,7 +53,7 @@ export function ChatRoomContent({channels, selectedChannelId, senderName}: Props
 
     return (
         <div ref={chatRoomRef}
-             className={"flex flex-col flex-1 rounded-lg bg-slate-200 h-fit w-full p-3 bg-slate-300 mt-2 overflow-y-auto"}>
+             className={"flex flex-col rounded-lg bg-slate-200 w-full p-3 bg-slate-300 mt-2"}>
             {renderMessages()}
         </div>
     );
